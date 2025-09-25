@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+jspm_packages/
+bower_components/
+web_modules/
+dist/
+
+.history/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.npm
+package-lock.json
+yarn.lock
+.yarn-integrity
+.yarn/cache
+
+dist/
+build/
+.next/
+out/
+.nuxt
