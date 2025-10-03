@@ -45,20 +45,14 @@ function ideavorTaggerLoader(this: LoaderContext<any>, code: string): void {
             const ideavo = `${fileRelative}:${loc.line}:${loc.column}`;
 
             // Check if className is static (true) or dynamic with {} (false)
-            let stylesEditable = 'false';
+            let stylesEditable = 'true';
             const classNameAttr = node.attributes?.find(
               (attr: any) => attr.type === 'JSXAttribute' && attr.name?.name === 'className'
             );
 
-            if (classNameAttr) {
-              // If className value is a StringLiteral (normal string), it's editable
-              if (classNameAttr.value?.type === 'StringLiteral') {
-                stylesEditable = 'true';
-              }
-              // If className value is JSXExpressionContainer (has {}), it's not editable
-              else if (classNameAttr.value?.type === 'JSXExpressionContainer') {
-                stylesEditable = 'false';
-              }
+            // If className has {} expression, it's not editable
+            if (classNameAttr?.value?.type === 'JSXExpressionContainer') {
+              stylesEditable = 'false';
             }
 
             if (node.name.end != null) {
