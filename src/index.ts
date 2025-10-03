@@ -26,7 +26,7 @@ function ideavorTaggerLoader(this: LoaderContext<any>, code: string): void {
       let transformCount = 0;
 
       walk(ast as any, {
-        enter: (node: any) => {
+        enter: (node: any, parent: any) => {
           try {
             if (node.type !== 'JSXOpeningElement') return;
             if (node.name?.type !== 'JSXIdentifier') return;
@@ -55,10 +55,22 @@ function ideavorTaggerLoader(this: LoaderContext<any>, code: string): void {
               stylesEditable = 'false';
             }
 
+            // Check if content is static (true) or dynamic with {} (false)
+            let contentEditable = 'true';
+
+            if (parent?.type === 'JSXElement' && parent.children) {
+              const hasExpression = parent.children.some(
+                (child: any) => child.type === 'JSXExpressionContainer'
+              );
+              if (hasExpression) {
+                contentEditable = 'false';
+              }
+            }
+
             if (node.name.end != null) {
               ms.appendLeft(
                 node.name.end,
-                ` ideavo-tag-id="${ideavo}" ideavo-tag-name="${tagName}" ideavo-styles-editable="${stylesEditable}"`
+                ` ideavo-tag-id="${ideavo}" ideavo-tag-name="${tagName}" ideavo-styles-editable="${stylesEditable}" ideavo-content-editable="${contentEditable}"`
               );
               transformCount++;
             }
