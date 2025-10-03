@@ -43,11 +43,28 @@ function ideavorTaggerLoader(this: LoaderContext<any>, code: string): void {
             if (!loc) return;
 
             const ideavo = `${fileRelative}:${loc.line}:${loc.column}`;
-            
+
+            // Check if className is static (true) or dynamic with {} (false)
+            let stylesEditable = 'false';
+            const classNameAttr = node.attributes?.find(
+              (attr: any) => attr.type === 'JSXAttribute' && attr.name?.name === 'className'
+            );
+
+            if (classNameAttr) {
+              // If className value is a StringLiteral (normal string), it's editable
+              if (classNameAttr.value?.type === 'StringLiteral') {
+                stylesEditable = 'true';
+              }
+              // If className value is JSXExpressionContainer (has {}), it's not editable
+              else if (classNameAttr.value?.type === 'JSXExpressionContainer') {
+                stylesEditable = 'false';
+              }
+            }
+
             if (node.name.end != null) {
               ms.appendLeft(
                 node.name.end,
-                ` ideavo-tag-id="${ideavo}" ideavo-tag-name="${tagName}"`
+                ` ideavo-tag-id="${ideavo}" ideavo-tag-name="${tagName}" ideavo-styles-editable="${stylesEditable}"`
               );
               transformCount++;
             }
