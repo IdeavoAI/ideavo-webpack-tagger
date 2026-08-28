@@ -3,10 +3,11 @@ import MagicString from 'magic-string';
 import path from 'path';
 import { walk } from 'estree-walker';
 import type { LoaderContext } from 'webpack';
+import type { RawSourceMap } from 'source-map';
 
 const VALID_EXTENSIONS = new Set(['.jsx', '.tsx']);
 
-function ideavorTaggerLoader(this: LoaderContext<any>, code: string): void {
+function ideavorTaggerLoader(this: LoaderContext<any>, code: string, inputSourceMap?: RawSourceMap): void {
   const callback = this.async();
   
   const transform = async () => {
@@ -90,7 +91,12 @@ function ideavorTaggerLoader(this: LoaderContext<any>, code: string): void {
       const transformedCode = ms.toString();
       return {
         code: transformedCode,
-        map: ms.generateMap({ hires: true })
+        map: ms.generateMap({
+          source: this.resourcePath,
+          file: path.basename(this.resourcePath),
+          includeContent: true,
+          hires: false
+        })
       };
     } catch (error) {
       console.warn(
@@ -105,11 +111,11 @@ function ideavorTaggerLoader(this: LoaderContext<any>, code: string): void {
     if (result) {
       callback(null, result.code, result.map);
     } else {
-      callback(null, code);
+      callback(null, code, inputSourceMap);
     }
   }).catch((err) => {
     console.error(`[ideavo-tagger] ERROR in ${this.resourcePath}:`, err);
-    callback(null, code);
+    callback(err as Error);
   });
 }
 

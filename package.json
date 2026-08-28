@@ -1,11 +1,18 @@
 {
   "name": "@ideavo/webpack-tagger",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A webpack loader that automatically adds ideavo attributes to your React components in Next.js.",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "files": [
     "dist"
   ],
